@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./new.css">
+    <title>Desperate</title>
+</head>
+
+<body>
+    
+
+    <div class="topnav">
+        <a>Home</a>
+        <a id='donorNav'>Donor</a>
+        <a id='orgNav'>Organization</a>
+      
+      </div>
+
+      <div id='userChoice' class='userChoice'>
+        <button id='orgChoice'>im org</button>
+        <button id='donorChoice'>im donor</button>
+      </div>
+
+    
+
+ <!-- 
+    <div class="tab">
+        <button id="donorLink" class="tablinks" onclick="openCity(event, 'donor')">Donor</button>
+        <button id ="orgLink" class="tablinks" onclick="openCity(event, 'org')">Org</button>
+
+    </div>
+
+
+    <div id="donor" class="tabcontent">
+      
+        <p>Enter your address to schedule a donation pickup:</p>
+    </div>
+
+    <div id="org" class="tabcontent">
+        
+        <p>Add new organization location/branch:</p>
+    </div>
+
+-->
+
+    <br>
+
+   <!-- <p>Enter your location below:</p> -->
+
+   <button id="editButton">EDIT BTN</button>
+   
+
+    <div id="subform" >
+    
+        <input id='orgNameInput' type="text" placeholder="Organization Name">
+        <input id="searchbox" class="searchbox" type="text" />
+        <input id="submitButton" type="submit" />
+
+    </div>
+    
+    
+    
+<br>
+<br>
+    
+     <div id="map"></div> 
+     <table id='donorTable' class='table'></table>
+     <table id='orgTable' class='table'></table>
+
+    <script src='./new.js'></script>
+
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWv-vTXfmN5NauodcHABVfNOkkYd0ZrQg&callback=initMap&libraries=places">
+        </script>
+
+</body>
+
+</html>

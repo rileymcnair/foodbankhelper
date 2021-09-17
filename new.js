@@ -8,6 +8,7 @@ var place;
 var currtableId;
 var directionsService;
 var directionsRenderer;
+var pos;
 const submitButton = document.getElementById('submitButton');
 const searchboxInput = document.getElementById('searchbox');
 submitButton.onclick = userSubmitEventHandler;
@@ -157,6 +158,22 @@ function userSubmitEventHandler(event) {
           icon: icon
         });
 
+        let contentString = '<h1>' + place.name + '</h1>';
+        const infowindow = new google.maps.InfoWindow({
+            content: contentString,
+          });
+        currmarker.addListener('click', () => {calcRoute(currmarker);});
+currmarker.addListener('mouseover',  () => {
+    infowindow.open({
+        anchor: currmarker,
+        map,
+        shouldFocus: false,
+      });
+});
+currmarker.addListener('mouseout',  () => {
+    infowindow.close();
+     
+});
           let currOrgName;
           if(user=='org')
             currOrgName = document
@@ -166,32 +183,59 @@ function userSubmitEventHandler(event) {
 
           let currSubmission = new Submission(currmarker, currOrgName);
 
-        google.maps.event.addListener(currmarker, 'click', markerEventHandler);
+        //google.maps.event.addListener(currmarker, 'click', markerEventHandler(currmarker));
         let markerArray = pickupMarkers;
         if(user=='org') 
           markerArray = orgMarkers;
         markerArray.push(currmarker);
         console.log("submitted marker");
     
+        
         addMarkerToTable(currmarker,currtableId);
     }  
 }
 
 function initMap() {
 
+    
+   
     //create new direction service
     directionsService = new google.maps.DirectionsService();
 
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 44.5, lng: 265 }, //center of US
-        zoom: 3,
+    
+
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+              console.log(`user lat: ${position.coords.latitude}`);
+              console.log(`user lng: ${position.coords.longitude}`);
+
+
+             pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+              
+            map.setCenter(pos);
+          },
+          () => {
+            console.log('error getting location');
+          }
+        );
+      } else {
+        // Browser doesn't support Geolocation
+        console.log('error getting location');
+      }
+
+
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: pos, //center of US
+        zoom: 11,
     });
+    
 
 // Create a renderer for directions and bind it to the map.
 directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
 
- // Instantiate an info window to hold step text.
- const stepDisplay = new google.maps.InfoWindow();
+
 
 
     //initiate google autocomplete places searchbox
@@ -249,15 +293,18 @@ function onPlaceChanged() {
 
 
 
-function markerEventHandler() {
-    calcRoute();
+function markerEventHandler(marker) {
+    calcRoute(marker);
 }
 
 
 
 
 function addMarkerToTable(marker, tableId) {
-    const table1 = document.getElementById(tableId);
+    let oppositeTable = 'orgTable';
+    if(tableId == 'orgTable')
+        oppositeTable = 'donorTable';
+    const table1 = document.getElementById(oppositeTable);
     let newRow = document.createElement('tr');
     let newEntry = document.createElement('td');
     console.log(place.name);
@@ -270,12 +317,12 @@ function addMarkerToTable(marker, tableId) {
 
 }
 
-function calcRoute() {
+function calcRoute(marker) {
     var start = { lat: 44.5, lng: 265 }; //center of US
-    var end = "Chicago, IL";
+ console.log('place of marker clicked: ' + marker.getPosition());
     var request = {
-      origin: start,
-      destination: end,
+      origin: pos,
+      destination: marker.getPosition(),
       travelMode: 'DRIVING'
     };
     directionsService.route(request, function(result, status) {

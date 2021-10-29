@@ -22,19 +22,73 @@ editButton.onclick = editHandler;
 const subform = document.getElementById('subform');
 const orgNav = document.getElementById('orgNav');
 const donorNav = document.getElementById('donorNav');
-orgNav.addEventListener('click', function(){user = 'org';
+const topNav = document.getElementById('topnav');
+const editText = document.getElementById('editText');
+var DOMLoaded = false;
+var markersArray = [];
+const donorText = document.getElementById('donorText');
+const orgText = document.getElementById('orgText');
+
+donorChoice.addEventListener('mouseover', function() {
+    donorText.style.textDecoration = 'underline';
+});
+donorChoice.addEventListener('mouseout', function() {
+    donorText.style.textDecoration = 'none';
+});
+orgChoice.addEventListener('mouseover', function() {
+    orgText.style.textDecoration = 'underline';
+});
+orgChoice.addEventListener('mouseout', function() {
+    orgText.style.textDecoration = 'none';
+});
+  
+function setEditText(user) {
+if(user == 'org')
+    editText.innerHTML = 'Add your organization';
+else
+    editText.innerHTML = 'Add a donation';
+}
+
+class Marker {
+    constructor(marker, place, type) {
+        this.marker = marker;
+        this.place = place;
+        this.type = type; // type is either org or donor
+    }
+
+    getPlace() {
+        return this.place;
+    }
+    getMarker() {
+        return this.marker;
+    }
+    getType() {
+        return this.type;
+    }
+};
+
+
+document.addEventListener("DOMContentLoaded", function() { DOMLoaded = true;});
+
+orgNav.addEventListener('click', function(){
+    user = 'org';
     hideById('subform');
     hideById('donorTable');
     hideById('orgTable');
     currtableId = 'orgTable';
     showTableById(currtableId);
+    console.log("user: " + user);
+    setEditText(user);
 });
-donorNav.addEventListener('click', function(){user = 'donor';
+donorNav.addEventListener('click', function(){
+    user = 'donor';
     hideById('subform');
     hideById('donorTable');
     hideById('orgTable');
     currtableId = 'donorTable';
     showTableById(currtableId);
+    console.log("user: " + user);
+    setEditText(user);
 });
 
 function showTableById(tableId)
@@ -56,19 +110,23 @@ function hideById(elementId) {
 
 var firstEditInteraction = true;
 function editHandler(){
-    // if(editIsHid) {
-    //     displayById('subform');
-    //     if(user == 'donor') hideById('orgNameInput');
-    //     else displayById('orgNameInput');
-    //     editIsHid = false;
-    //     return;
-    // }
-    // hideById('subform');
-    // editIsHid = true;
+
     if(subform.style.display == 'none' || firstEditInteraction) {
+        let i = 1;
+        while(i<5) { 
+            if (DOMLoaded)
+                i = 6;
+        }
         displayById('subform');
-        if(user == 'donor') hideById('orgNameInput');
-        else displayById('orgNameInput');
+        console.log('user i want: ' + user);
+
+        //set placeholder for form
+        if(user == 'donor') {
+            document.getElementById('orgNameInput').placeholder = 'List of items';
+        }
+        else
+            document.getElementById('orgNameInput').placeholder = 'Organization name';
+
         firstEditInteraction = false;
     }
     else {
@@ -78,24 +136,19 @@ function editHandler(){
 }
 
 
-
-class Submission {
-    constructor(marker, orgName='')
-    {
-        this.marker = marker;
-        this.orgName = orgName;
-    }
-}
-
 function userChoiceHandler(event) 
 {
     if(event.currentTarget.id == 'donorChoice') {
         user = 'donor';
         currtableId = 'donorTable';
+    setEditText(user);
+
     }
     else {
         user = 'org';
         currtableId = 'orgTable';
+    setEditText(user);
+
     }
     console.log(`user: ${user}`);
     
@@ -107,29 +160,11 @@ function userChoiceHandler(event)
     hideById('orgTable');
     hideById('donorTable');
 
+    if(DOMLoaded)
+        displayById('topnav');
+       
     showTableById(currtableId);
-
-
-
-    // document.getElementById('table').style.display = 'table';
 }
-
-
-// function loadTable() {
-//     if (markers.size ==0 || markers.size == 1)
-//         return;
-//     markers.sort(compareFunction); // by distance
-//     for (var i =0; i < markers.size; i++)
-//     {
-//         document.getElementById('th' + i).innerHTML = marker.data;
-//     }
-// }
-
-// function compareFunction() {
-//     if (marker[0].location < marker[1].location)
-//         return -1;
-//     return 1;
-// }
 
 
 
@@ -139,6 +174,7 @@ function userSubmitEventHandler(event) {
         (event.keyCode && event.keyCode === 13) ||
         event.type === 'click'
     ) {
+        let info = document.getElementById('orgNameInput').value;
         // var editBtn = document.getElementById('editButton');
         // subform.style.display ='block';
         //choose style and place marker
@@ -146,9 +182,9 @@ function userSubmitEventHandler(event) {
         if(user=='org') iconUrl = './orgMarker.png'
         var icon = {
             url: iconUrl, // url
-            scaledSize: new google.maps.Size(50, 50), // scaled size
+            scaledSize: new google.maps.Size(60, 60), // scaled size
             origin: new google.maps.Point(0,0), // origin
-            anchor: new google.maps.Point(0, 0) // anchor
+            anchor: new google.maps.Point(30, 60) // anchor
         };
         
         currmarker = new google.maps.Marker({
@@ -157,52 +193,36 @@ function userSubmitEventHandler(event) {
           animation:google.maps.Animation.DROP,
           icon: icon
         });
+        console.log("user of submitted marker: " + user);
+        let type =(user=="donor") ? "donor" : "org";
+        let markerToAdd = new Marker(currmarker, place, type);
+        markersArray.push(markerToAdd);
 
-        let contentString = '<h1>' + place.name + '</h1>';
+        let contentString = '<h3>' + place.name + '</h3>';
         const infowindow = new google.maps.InfoWindow({
             content: contentString,
           });
         currmarker.addListener('click', () => {calcRoute(currmarker);});
-currmarker.addListener('mouseover',  () => {
-    infowindow.open({
-        anchor: currmarker,
-        map,
-        shouldFocus: false,
-      });
-});
-currmarker.addListener('mouseout',  () => {
-    infowindow.close();
-     
-});
-          let currOrgName;
-          if(user=='org')
-            currOrgName = document
-            .getElementById('orgNameInput').value;
-          else 
-            currOrgName = '';
-
-          let currSubmission = new Submission(currmarker, currOrgName);
-
+        currmarker.addListener('mouseover',  () => {
+            infowindow.open({
+                anchor: currmarker,
+                map,
+                shouldFocus: false,
+            });
+        });
+        currmarker.addListener('mouseout',  () => {
+            infowindow.close();
+        });
         //google.maps.event.addListener(currmarker, 'click', markerEventHandler(currmarker));
-        let markerArray = pickupMarkers;
-        if(user=='org') 
-          markerArray = orgMarkers;
-        markerArray.push(currmarker);
         console.log("submitted marker");
-    
-        
-        addMarkerToTable(currmarker,currtableId);
+        addMarkerToTable(currmarker,currtableId, info);
     }  
 }
 
 function initMap() {
 
-    
-   
     //create new direction service
     directionsService = new google.maps.DirectionsService();
-
-    
 
 
     if (navigator.geolocation) {
@@ -232,10 +252,8 @@ function initMap() {
     });
     
 
-// Create a renderer for directions and bind it to the map.
-directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
-
-
+    // Create a renderer for directions and bind it to the map.
+    directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
 
 
     //initiate google autocomplete places searchbox
@@ -250,32 +268,6 @@ directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
 
 
 
-
-
-
-// function openCity(evt, cityName) {
-//     // Declare all variables
-//     var i, tabcontent, tablinks;
-
-//     // Get all elements with class="tabcontent" and hide them
-//     tabcontent = document.getElementsByClassName("tabcontent");
-//     for (i = 0; i < tabcontent.length; i++) {
-//       tabcontent[i].style.display = "none";
-//     }
-
-//     // Get all elements with class="tablinks" and remove the class "active"
-//     tablinks = document.getElementsByClassName("tablinks");
-//     for (i = 0; i < tablinks.length; i++) {
-//         tablinks[i].className = tablinks[i].className.replace(" active", "");
-//     }
-
-//     // Show the current tab, and add an "active" class to the button that opened the tab
-//     document.getElementById(cityName + "Link").style.display = "block";
-//     document.getElementById(cityName + "Link").className += ' active';
-//     //evt.currentTarget.className += " active";
-
-//     document.getElementById('map').style.display = 'block';
-// }
 
 function onPlaceChanged() {
     place = autocomplete.getPlace();
@@ -299,21 +291,64 @@ function markerEventHandler(marker) {
 
 
 
-
-function addMarkerToTable(marker, tableId) {
+function addMarkerToTable(marker, tableId, info) {
     let oppositeTable = 'orgTable';
     if(tableId == 'orgTable')
         oppositeTable = 'donorTable';
     const table1 = document.getElementById(oppositeTable);
     let newRow = document.createElement('tr');
     let newEntry = document.createElement('td');
+    let hdr = document.createElement('h3');
+    let para = document.createElement('p');
     console.log(place.name);
-    let insertText = place.name;
-    let newText = document.createTextNode(insertText);
+    let paraText = document.createTextNode(info);
+    let hdrText = document.createTextNode(place.name); 
+    if (user == 'org' )
+        [paraText, hdrText] = [hdrText, paraText]; //swaps
+   
+    newRow.addEventListener('click', function(event) {
+        if(DOMLoaded) {
+        console.log('target is: ');
+        console.log(event.currentTarget);
+        let wantedElement = (user=='donor') ? 'p' : 'h3';
+        let children = event.currentTarget.getElementsByTagName(wantedElement);
+        console.log('children:');
+        console.log(children);
+        let clickedNameElem = children.item(0);
+        console.log(clickedNameElem);
+        let clickedName = clickedNameElem.innerHTML;
+        console.log(clickedName);
+        let typeToFind = (user=='donor')? "org" : "donor"; //inverts user
+        let foundMarker;
+        console.log("clicked: " + clickedName);
+        console.log("Markers array:");
+        console.log(markersArray);
+        // console.log(markersArray[0].getPlace().name);
+        console.log(clickedName == markersArray[0].getPlace().name);
+        for (let i = 0; i < markersArray.length; i++)
+        {
 
-    newEntry.appendChild(newText);
+            if (markersArray[i].getPlace().name == clickedName 
+                && markersArray[i].getType() == typeToFind)
+                {
+                    foundMarker = markersArray[i];
+                    console.log("found marker:");
+                    console.log(foundMarker);
+                }
+                
+        }
+        
+        map.panTo(foundMarker.getMarker().getPosition());
+        map.setZoom(13);
+    }
+    });
+    para.appendChild(paraText);
+    hdr.appendChild(hdrText);
+    newEntry.appendChild(hdr);
+    newEntry.appendChild(para);
     newRow.appendChild(newEntry);
     table1.appendChild(newRow);
+
 
 }
 
@@ -331,3 +366,11 @@ function calcRoute(marker) {
       }
     });
   }
+
+// submitButton.addEventListener('mousedown', function() {
+//     submitButton.style.backgroundColor = 'white';
+// });
+// submitButton.addEventListener('mouseup', function() {
+//     submitButton.style.backgroundColor = 'blue';
+// });
+

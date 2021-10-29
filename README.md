@@ -6,8 +6,8 @@ I wanted to create an interactive web app that empowers donors to connect direct
 and vica versa. It is easy for users to visualize on an interactive map where nearby organizations and 
 donations are marked. The web app is mostly front-end oriented and requires no page loading, but will 
 restart all instances on refresh. Envisioned users are either: 
-  - donors, who wish to schedule a donation or to view nearby organizations
-  - organizations, who wish to add their organization to the system or to view nearby donations ready for pickup. 
+  - Donors, who wish to schedule a donation or to view nearby organizations
+  - Organizations, who wish to add their organization to the system or to view nearby donations ready for pickup. 
 
 ## Features
 

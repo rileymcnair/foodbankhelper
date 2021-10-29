@@ -2,7 +2,7 @@
 
 ## Overview
 
-I wanted to create an interactive web app that empowers donors to connect directly with organizations,
+Fully interactive web application that empowers donors to connect directly with organizations,
 and vica versa. It is easy for users to visualize on an interactive map where nearby organizations and 
 donations are marked. The web app is mostly front-end oriented and requires no page loading, but will 
 restart all instances on refresh. Envisioned users are either: 

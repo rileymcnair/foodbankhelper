@@ -44,9 +44,9 @@ orgChoice.addEventListener('mouseout', function() {
   
 function setEditText(user) {
 if(user == 'org')
-    editText.innerHTML = 'Add your organization';
+    editText.innerHTML = 'Add your organization to the map';
 else
-    editText.innerHTML = 'Add a donation';
+    editText.innerHTML = 'Add a donation for pickup';
 }
 
 class Marker {
@@ -168,7 +168,6 @@ function userChoiceHandler(event)
 
 
 
-
 function userSubmitEventHandler(event) {
     if (
         (event.keyCode && event.keyCode === 13) ||
@@ -267,8 +266,6 @@ function initMap() {
 }
 
 
-
-
 function onPlaceChanged() {
     place = autocomplete.getPlace();
     if (!place.geometry) {
@@ -278,7 +275,7 @@ function onPlaceChanged() {
     }
     else {
         console.log(place);
-        map.setZoom(11); //maybe try 17
+        map.setZoom(11); 
         map.panTo(place.geometry.location);
     }
 }
@@ -288,7 +285,6 @@ function onPlaceChanged() {
 function markerEventHandler(marker) {
     calcRoute(marker);
 }
-
 
 
 function addMarkerToTable(marker, tableId, info) {
@@ -323,7 +319,7 @@ function addMarkerToTable(marker, tableId, info) {
         console.log("clicked: " + clickedName);
         console.log("Markers array:");
         console.log(markersArray);
-        // console.log(markersArray[0].getPlace().name);
+        
         console.log(clickedName == markersArray[0].getPlace().name);
         for (let i = 0; i < markersArray.length; i++)
         {
@@ -366,11 +362,4 @@ function calcRoute(marker) {
       }
     });
   }
-
-// submitButton.addEventListener('mousedown', function() {
-//     submitButton.style.backgroundColor = 'white';
-// });
-// submitButton.addEventListener('mouseup', function() {
-//     submitButton.style.backgroundColor = 'blue';
-// });
 

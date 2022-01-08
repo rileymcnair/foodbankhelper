@@ -177,8 +177,8 @@ function userSubmitEventHandler(event) {
         // var editBtn = document.getElementById('editButton');
         // subform.style.display ='block';
         //choose style and place marker
-        var iconUrl = './donorMarker.png';
-        if(user=='org') iconUrl = './orgMarker.png'
+        var iconUrl = './assets/donorMarker.png';
+        if(user=='org') iconUrl = './assets/orgMarker.png'
         var icon = {
             url: iconUrl, // url
             scaledSize: new google.maps.Size(60, 60), // scaled size
@@ -237,11 +237,12 @@ function initMap() {
           },
           () => {
             console.log('error getting location');
+            pos = new google.maps.LatLng(-34.397, 150.644);
           }
         );
       } else {
         // Browser doesn't support Geolocation
-        console.log('error getting location');
+        pos =  new google.maps.LatLng(-34.397, 150.644);
       }
 
 
